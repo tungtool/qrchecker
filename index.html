@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR - Tạo mã QR đa năng</title>
+    <title>QRGen - Tạo mã QR đa năng</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -20,8 +20,12 @@
             <i class="fas fa-qrcode"></i> QRGen
         </a>
         <ul class="nav" id="navMenu">
-            <li><a href="#home" class="active">Trang chủ</a></li>
-            <li><a href="#generator">Tạo QR</a></li>
+            <li><a href="#home">Trang chủ</a></li>
+            <li><a href="#" data-tab="text">Văn bản</a></li>
+            <li><a href="#" data-tab="image">Hình ảnh</a></li>
+            <li><a href="#" data-tab="video">Video</a></li>
+            <li><a href="#" data-tab="card">Cards Info</a></li>
+            <li><a href="#" data-tab="donation">Quyên góp</a></li>
             <li><a href="#about">Giới thiệu</a></li>
             <li><a href="#" id="resetDisplayLink" style="display:none;">Quay lại</a></li>
         </ul>
@@ -34,8 +38,11 @@
     <section class="hero" id="home">
         <div class="hero-content">
             <h1 class="hero-title">Tạo <span>Mã QR</span> Đa Năng</h1>
-            <p class="hero-subtitle">Biến văn bản, hình ảnh, video và thông tin cá nhân thành mã QR chuyên nghiệp chỉ trong vài giây.</p>
-            <a href="#generator" class="btn btn-primary">Bắt đầu tạo QR <i class="fas fa-arrow-right"></i></a>
+            <p class="hero-subtitle">Biến văn bản, hình ảnh, video, thông tin cá nhân và quyên góp thành mã QR chuyên nghiệp chỉ trong vài giây.</p>
+            <div class="hero-buttons">
+                <a href="#generator" class="btn btn-primary" data-tab="text">Bắt đầu tạo QR <i class="fas fa-arrow-right"></i></a>
+                <a href="#generator" class="btn btn-donation" data-tab="donation">Quyên góp <i class="fas fa-hand-holding-heart"></i></a>
+            </div>
         </div>
         <div class="hero-shape"></div>
     </section>
@@ -50,6 +57,7 @@
                 <button class="tab-btn" data-tab="image"><i class="fas fa-image"></i> Hình ảnh</button>
                 <button class="tab-btn" data-tab="video"><i class="fas fa-video"></i> Video</button>
                 <button class="tab-btn" data-tab="card"><i class="fas fa-id-card"></i> Cards Info</button>
+                <button class="tab-btn" data-tab="donation"><i class="fas fa-hand-holding-heart"></i> Quyên góp</button>
             </div>
 
             <!-- Tab content: Văn bản -->
@@ -64,24 +72,44 @@
             <!-- Tab content: Hình ảnh -->
             <div class="tab-content" id="tab-image">
                 <div class="form-group">
-                    <label for="imageUrl">URL hình ảnh (https://...)</label>
+                    <label>Chọn ảnh từ máy (tối đa 2KB để nhúng QR)</label>
+                    <input type="file" id="imageFile" accept="image/*" onchange="handleImageFile()">
+                    <small class="info-note">Hoặc nhập URL ảnh bên dưới</small>
+                </div>
+                <div class="form-group">
+                    <label for="imageUrl">URL hình ảnh</label>
                     <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg">
                 </div>
-                <p class="info-note"><i class="fas fa-info-circle"></i> Khi quét mã, hình ảnh sẽ được hiển thị toàn màn hình.</p>
+                <div id="imagePreview" style="display:none; text-align:center; margin-bottom:15px;">
+                    <img id="imagePreviewImg" style="max-width:100%; max-height:200px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+                </div>
                 <button class="btn-generate" onclick="generateImageQR()"><i class="fas fa-qrcode"></i> Tạo mã QR</button>
             </div>
 
             <!-- Tab content: Video -->
             <div class="tab-content" id="tab-video">
                 <div class="form-group">
-                    <label for="videoUrl">URL video (YouTube, Vimeo, hoặc file .mp4)</label>
+                    <label>Chọn video từ máy (chỉ để xem trước, không thể nhúng vào QR)</label>
+                    <input type="file" id="videoFile" accept="video/*" onchange="handleVideoFile()">
+                    <small class="info-note">Vui lòng nhập URL video để tạo mã QR</small>
+                </div>
+                <div class="form-group">
+                    <label for="videoUrl">URL video (YouTube, Vimeo, MP4)</label>
                     <input type="url" id="videoUrl" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+                <div id="videoPreview" style="display:none; text-align:center; margin-bottom:15px;">
+                    <video id="videoPreviewPlayer" controls style="max-width:100%; max-height:200px; border-radius:8px;"></video>
                 </div>
                 <button class="btn-generate" onclick="generateVideoQR()"><i class="fas fa-qrcode"></i> Tạo mã QR</button>
             </div>
 
             <!-- Tab content: Cards Info -->
             <div class="tab-content" id="tab-card">
+                <div class="form-group">
+                    <label>Ảnh đại diện (avatar) - tối đa 2KB</label>
+                    <input type="file" id="avatarFile" accept="image/*" onchange="handleAvatarFile()">
+                    <small class="info-note">Nếu ảnh quá lớn, QR có thể không quét được</small>
+                </div>
                 <div class="form-group">
                     <label for="fullName">Họ và tên</label>
                     <input type="text" id="fullName" placeholder="Nguyễn Văn A">
@@ -109,13 +137,34 @@
                 <button class="btn-generate" onclick="generateCardQR()"><i class="fas fa-qrcode"></i> Tạo mã QR</button>
             </div>
 
+            <!-- Tab content: Quyên góp -->
+            <div class="tab-content" id="tab-donation">
+                <div class="form-group">
+                    <label for="donationName">Tên tài khoản</label>
+                    <input type="text" id="donationName" value="Vũ Mạnh Tùng" placeholder="Vũ Mạnh Tùng">
+                </div>
+                <div class="form-group">
+                    <label for="donationAccount">Số tài khoản</label>
+                    <input type="text" id="donationAccount" placeholder="0123456789">
+                </div>
+                <div class="form-group">
+                    <label for="donationAmount">Số tiền (VNĐ)</label>
+                    <input type="number" id="donationAmount" min="1000" max="500000" step="1000" value="10000">
+                    <small>Từ 1.000 đến 500.000 VNĐ</small>
+                </div>
+                <div class="form-group">
+                    <label for="donationMessage">Nội dung chuyển khoản</label>
+                    <input type="text" id="donationMessage" placeholder="Ủng hộ quỹ từ thiện">
+                </div>
+                <button class="btn-generate" onclick="generateDonationQR()"><i class="fas fa-qrcode"></i> Tạo mã QR</button>
+            </div>
+
             <!-- Kết quả QR -->
             <div class="qr-result" id="qrResult">
                 <h3 style="margin-bottom: 15px;">Mã QR của bạn</h3>
                 <div class="qr-code-container">
                     <div id="qrcode"></div>
                 </div>
-                <div class="qr-url" id="qrUrl"></div>
                 <button class="btn-download" onclick="downloadQR()"><i class="fas fa-download"></i> Tải xuống PNG</button>
             </div>
         </div>
@@ -158,9 +207,7 @@
     <!-- DISPLAY OVERLAY (hiển thị khi quét mã) -->
     <div class="display-overlay" id="displayOverlay">
         <button class="close-btn" onclick="closeDisplay()"><i class="fas fa-times"></i></button>
-        <div class="display-content" id="displayContent">
-            <!-- Nội dung sẽ được điền bằng JavaScript -->
-        </div>
+        <div class="display-content" id="displayContent"></div>
     </div>
 
     <!-- JavaScript -->
