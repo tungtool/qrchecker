@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR - Tạo mã QR đa năng</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- QRCode.js -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header" id="header">
+        <a href="#home" class="logo">
+            <i class="fas fa-qrcode"></i> QRGen
+        </a>
+        <ul class="nav" id="navMenu">
+            <li><a href="#home" class="active">Trang chủ</a></li>
+            <li><a href="#generator">Tạo QR</a></li>
+            <li><a href="#about">Giới thiệu</a></li>
+            <li><a href="#" id="resetDisplayLink" style="display:none;">Quay lại</a></li>
+        </ul>
+        <div class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+
+    <!-- HERO / INTRO -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">Tạo <span>Mã QR</span> Đa Năng</h1>
+            <p class="hero-subtitle">Biến văn bản, hình ảnh, video và thông tin cá nhân thành mã QR chuyên nghiệp chỉ trong vài giây.</p>
+            <a href="#generator" class="btn btn-primary">Bắt đầu tạo QR <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="hero-shape"></div>
+    </section>
+
+    <!-- MAIN QR GENERATOR -->
+    <main class="container" id="generator">
+        <h2 class="section-title">Tạo <span>Mã QR</span> của bạn</h2>
+        <div class="qr-generator card">
+            <!-- Tab buttons -->
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="text"><i class="fas fa-font"></i> Văn bản</button>
+                <button class="tab-btn" data-tab="image"><i class="fas fa-image"></i> Hình ảnh</button>
+                <button class="tab-btn" data-tab="video"><i class="fas fa-video"></i> Video</button>
+                <button class="tab-btn" data-tab="card"><i class="fas fa-id-card"></i> Cards Info</button>
+            </div>
+
+            <!-- Tab content: Văn bản -->
+            <div class="tab-content active" id="tab-text">
+                <div class="form-group">
+                    <label for="textInput">Nội dung văn bản</label>
+                    <textarea id="textInput" placeholder="Nhập văn bản bạn muốn mã hóa..."></textarea>
+                </div>
+                <button class="btn-generate" onclick="generateTextQR()"><i class="fas fa-qrcode"></i> Tạo mã QR</button>
+            </div>
+
+            <!-- Tab content: Hình ảnh -->
+            <div class="tab-content" id="tab-image">
+                <div class="form-group">
+                    <label for="imageUrl">URL hình ảnh (https://...)</label>
+                    <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg">
+                </div>
+                <p class="info-note"><i class="fas fa-info-circle"></i> Khi quét mã, hình ảnh sẽ được hiển thị toàn màn hình.</p>
+                <button class="btn-generate" onclick="generateImageQR()"><i class="fas fa-qrcode"></i> Tạo mã QR</button>
+            </div>
+
+            <!-- Tab content: Video -->
+            <div class="tab-content" id="tab-video">
+                <div class="form-group">
+                    <label for="videoUrl">URL video (YouTube, Vimeo, hoặc file .mp4)</label>
+                    <input type="url" id="videoUrl" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+                <button class="btn-generate" onclick="generateVideoQR()"><i class="fas fa-qrcode"></i> Tạo mã QR</button>
+            </div>
+
+            <!-- Tab content: Cards Info -->
+            <div class="tab-content" id="tab-card">
+                <div class="form-group">
+                    <label for="fullName">Họ và tên</label>
+                    <input type="text" id="fullName" placeholder="Nguyễn Văn A">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Số điện thoại</label>
+                    <input type="tel" id="phone" placeholder="+84 912345678">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="example@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="company">Công ty</label>
+                    <input type="text" id="company" placeholder="Tên công ty">
+                </div>
+                <div class="form-group">
+                    <label for="position">Chức vụ</label>
+                    <input type="text" id="position" placeholder="Chức vụ">
+                </div>
+                <div class="form-group">
+                    <label for="website">Website</label>
+                    <input type="url" id="website" placeholder="https://example.com">
+                </div>
+                <button class="btn-generate" onclick="generateCardQR()"><i class="fas fa-qrcode"></i> Tạo mã QR</button>
+            </div>
+
+            <!-- Kết quả QR -->
+            <div class="qr-result" id="qrResult">
+                <h3 style="margin-bottom: 15px;">Mã QR của bạn</h3>
+                <div class="qr-code-container">
+                    <div id="qrcode"></div>
+                </div>
+                <div class="qr-url" id="qrUrl"></div>
+                <button class="btn-download" onclick="downloadQR()"><i class="fas fa-download"></i> Tải xuống PNG</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ABOUT SECTION -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <h2 class="section-title">Tại sao chọn <span>QRGen</span>?</h2>
+            <div class="about-grid">
+                <div class="about-card card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Nhanh chóng</h3>
+                    <p>Tạo mã QR chỉ trong vài giây với giao diện trực quan, không cần đăng ký.</p>
+                </div>
+                <div class="about-card card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Bảo mật</h3>
+                    <p>Dữ liệu của bạn không bao giờ được lưu trữ trên máy chủ, hoàn toàn riêng tư.</p>
+                </div>
+                <div class="about-card card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Tương thích mọi thiết bị</h3>
+                    <p>Mã QR hoạt động trên tất cả điện thoại thông minh và máy quét mã.</p>
+                </div>
+                <div class="about-card card">
+                    <i class="fas fa-paint-brush"></i>
+                    <h3>Đẹp mắt</h3>
+                    <p>Trang hiển thị nội dung được thiết kế tinh tế, hình ảnh mở toàn màn hình.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>&copy; 2025 QRGen. Tạo mã QR đa năng, miễn phí và chuyên nghiệp.</p>
+    </footer>
+
+    <!-- DISPLAY OVERLAY (hiển thị khi quét mã) -->
+    <div class="display-overlay" id="displayOverlay">
+        <button class="close-btn" onclick="closeDisplay()"><i class="fas fa-times"></i></button>
+        <div class="display-content" id="displayContent">
+            <!-- Nội dung sẽ được điền bằng JavaScript -->
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
